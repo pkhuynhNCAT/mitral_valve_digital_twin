@@ -2926,7 +2926,7 @@
                         time: { value: 0 },
                         opacity: { value: 0.7 }
                     },
-                    vertexShader: 
+                    vertexShader: `
                         attribute float size;
                         attribute vec3 velocity;
                         varying vec3 vColor;
@@ -2944,8 +2944,8 @@
                             gl_PointSize = size * (300.0 / -mvPosition.z);
                             gl_Position = projectionMatrix * mvPosition;
                         }
-                    ,
-                    fragmentShader: 
+                    `,
+                    fragmentShader: `
                         uniform float opacity;
                         varying vec3 vColor;
                         
@@ -2956,7 +2956,7 @@
                             
                             gl_FragColor = vec4(vColor, alpha * opacity);
                         }
-                    ,
+                    `,
                     transparent: true,
                     blending: THREE.AdditiveBlending,
                     depthWrite: false,
@@ -3597,7 +3597,7 @@
                 event.target.closest('.sim-card').classList.add('active');
                 
                 this.showNotification('success', 'Scenario Loaded', 
-                    ${scenario.replace('-', ' ')} scenario activated);
+                    `${scenario.replace('-', ' ')} scenario activated`);
             }
             
             toggleLayer(layer) {
@@ -3621,7 +3621,7 @@
                         break;
                 }
                 
-                this.showNotification('info', 'Layer Toggle', ${layer} layer updated);
+                this.showNotification('info', 'Layer Toggle', `${layer} layer updated`);
             }
             
             setView(view) {
@@ -3669,7 +3669,7 @@
             screenshot() {
                 const dataURL = this.renderer.domElement.toDataURL('image/png');
                 const link = document.createElement('a');
-                link.download = mitral_valve_${Date.now()}.png;
+                link.download = `mitral_valve_${Date.now()}.png`;
                 link.href = dataURL;
                 link.click();
                 
@@ -3695,7 +3695,7 @@
                 input.accept = '.dcm';
                 input.onchange = (e) => {
                     const files = e.target.files;
-                    this.showNotification('info', 'Import', Importing ${files.length} DICOM files);
+                    this.showNotification('info', 'Import', `Importing ${files.length} DICOM files`);
                 };
                 input.click();
             }
@@ -3717,7 +3717,7 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = mitral_data_${Date.now()}.json;
+                link.download = `mitral_data_${Date.now()}.json`;
                 link.click();
                 
                 this.showNotification('success', 'Export', 'Data exported successfully');
@@ -3742,8 +3742,8 @@
             showNotification(type, title, message) {
                 const container = document.getElementById('notifications');
                 const notification = document.createElement('div');
-                notification.className = notification ${type};
-                notification.innerHTML = 
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
                     <div class="notification-icon">
                         ${type === 'success' ? '✓' : type === 'warning' ? '!' : 'ℹ'}
                     </div>
@@ -3752,7 +3752,7 @@
                         <div class="notification-message">${message}</div>
                     </div>
                     <div class="notification-close" onclick="this.parentElement.remove()">✕</div>
-                ;
+                `;
                 
                 container.appendChild(notification);
                 
@@ -3765,12 +3765,12 @@
             
             showError(message) {
                 const container = document.getElementById('canvas-container');
-                container.innerHTML = 
+                container.innerHTML = `
                     <div class="error-message">
                         <div class="error-title">Error</div>
                         <div class="error-description">${message}</div>
                     </div>
-                ;
+                `;
             }
         }
         
@@ -3786,12 +3786,12 @@
                 document.getElementById('playBtn').innerHTML = '❚❚';
             } catch (error) {
                 console.error('Failed to initialize application:', error);
-                document.getElementById('canvas-container').innerHTML = 
+                document.getElementById('canvas-container').innerHTML = `
                     <div class="error-message">
                         <div class="error-title">Initialization Error</div>
                         <div class="error-description">Failed to start the application. Please refresh the page.</div>
                     </div>
-                ;
+                `;
             }
         });
         
@@ -3806,7 +3806,7 @@
                 const memory = window.performance.memory;
                 const used = Math.round(memory.usedJSHeapSize / 1048576);
                 const total = Math.round(memory.totalJSHeapSize / 1048576);
-                console.log(Memory: ${used}MB / ${total}MB);
+                console.log(`Memory: ${used}MB / ${total}MB`);
             }, 10000);
         }
     </script>

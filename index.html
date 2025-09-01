@@ -1,0 +1,3814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional Mitral Valve Digital Twin System - Advanced Cardiac Simulation Platform">
+    <meta name="author" content="MitralViz Pro Medical Systems">
+    <title>MitralViz Pro™ - Advanced Cardiac Digital Twin System v4.0</title>
+    
+    <style>
+        /* System Font Stack - No External Dependencies */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        :root {
+            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --tertiary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0a0e27;
+            --panel-bg: rgba(15, 20, 40, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-hover: rgba(255, 255, 255, 0.06);
+            --border-color: rgba(100, 150, 255, 0.15);
+            --border-hover: rgba(100, 150, 255, 0.3);
+            --text-primary: #e8eaf6;
+            --text-secondary: #9499b7;
+            --text-tertiary: #6b7294;
+            --accent-blue: #4a9eff;
+            --accent-purple: #9945ff;
+            --accent-pink: #ff45a1;
+            --accent-cyan: #00d4ff;
+            --success: #00d68f;
+            --warning: #ffaa00;
+            --danger: #ff3d71;
+            --info: #00b8d4;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 40px rgba(102, 126, 234, 0.3);
+            
+            /* Transitions */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-spring: 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background: var(--dark-bg);
+            background-image: 
+                radial-gradient(ellipse at top left, rgba(102, 126, 234, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at bottom right, rgba(240, 147, 251, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at center, rgba(79, 172, 254, 0.1) 0%, transparent 60%);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+            user-select: none;
+        }
+
+        /* Animated Background Particles */
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* Main Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 400px 1fr 440px;
+            grid-template-rows: 75px 1fr 130px;
+            height: 100vh;
+            gap: 1px;
+            background: rgba(100, 150, 255, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Enhanced Header */
+        .header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, rgba(15, 20, 40, 0.98) 0%, rgba(25, 30, 50, 0.98) 50%, rgba(15, 20, 40, 0.98) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 2px;
+            background: var(--primary-gradient);
+            animation: scanline 3s linear infinite;
+        }
+
+        @keyframes scanline {
+            to {
+                left: 100%;
+            }
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: var(--shadow-glow);
+            animation: pulse 2s infinite;
+            cursor: pointer;
+            transition: transform var(--transition-spring);
+        }
+
+        .logo:hover {
+            transform: rotate(10deg) scale(1.1);
+        }
+
+        .logo-icon {
+            font-size: 28px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            45% { transform: scale(0.9); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(102, 126, 234, 0.4),
+                           0 0 40px rgba(102, 126, 234, 0.2);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(102, 126, 234, 0.6),
+                           0 0 60px rgba(102, 126, 234, 0.3);
+            }
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 2px;
+            opacity: 0.8;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-size: 13px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            font-family: var(--font-stack);
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all var(--transition-slow);
+        }
+
+        .nav-btn:hover {
+            color: white;
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .nav-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            background: rgba(0, 214, 143, 0.1);
+            border: 1px solid rgba(0, 214, 143, 0.3);
+            border-radius: 25px;
+            transition: all var(--transition-base);
+        }
+
+        .status-indicator:hover {
+            background: rgba(0, 214, 143, 0.15);
+            box-shadow: 0 0 20px rgba(0, 214, 143, 0.3);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.8); }
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: var(--success);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Enhanced Left Panel */
+        .left-panel {
+            background: linear-gradient(180deg, var(--panel-bg) 0%, rgba(20, 25, 45, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 30px 25px;
+            position: relative;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(180deg, var(--panel-bg) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(100, 150, 255, 0.05);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            border-radius: 4px;
+            transition: all var(--transition-base);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--accent-purple) 0%, var(--accent-pink) 100%);
+        }
+
+        .section {
+            margin-bottom: 35px;
+            animation: slideInLeft 0.5s ease;
+            animation-fill-mode: both;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideInLeft {
+            from { 
+                opacity: 0; 
+                transform: translateX(-30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0);
+            }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(102, 126, 234, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(102, 126, 234, 0.8); }
+        }
+
+        .section-action {
+            width: 28px;
+            height: 28px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            color: var(--text-secondary);
+        }
+
+        .section-action:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 18px;
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity var(--transition-slow);
+        }
+
+        .card:hover {
+            background: var(--glass-hover);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .patient-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .patient-avatar {
+            width: 70px;
+            height: 70px;
+            background: var(--secondary-gradient);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .patient-avatar::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 3px solid var(--panel-bg);
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .patient-id {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .patient-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.critical {
+            background: rgba(255, 61, 113, 0.1);
+            border-color: rgba(255, 61, 113, 0.3);
+            color: var(--danger);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .info-value.highlight {
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Advanced Controls */
+        .control-group {
+            margin-bottom: 24px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-value {
+            font-size: 14px;
+            font-weight: 600;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slider-container {
+            position: relative;
+            height: 44px;
+            margin-bottom: 8px;
+        }
+
+        .slider-track {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, 
+                rgba(100, 150, 255, 0.1) 0%, 
+                rgba(100, 150, 255, 0.2) 100%);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .slider-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            transition: width var(--transition-fast);
+            position: relative;
+        }
+
+        .slider-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 100px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(100px); }
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-base);
+            z-index: 2;
+        }
+
+        .slider-handle:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
+        }
+
+        .slider-handle:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .slider-marks {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding: 0 2px;
+        }
+
+        .slider-mark {
+            font-size: 10px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Toggle Grid */
+        .toggle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .toggle-btn {
+            padding: 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+            font-family: var(--font-stack);
+        }
+
+        .toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all var(--transition-slow);
+            z-index: 0;
+        }
+
+        .toggle-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .toggle-btn.active {
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .toggle-btn.active::before {
+            width: 200%;
+            height: 200%;
+        }
+
+        .toggle-btn:hover:not(.active) {
+            background: var(--glass-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Simulation Grid */
+        .simulation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .sim-card {
+            padding: 16px 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sim-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform var(--transition-base);
+        }
+
+        .sim-card:hover {
+            background: var(--glass-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .sim-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .sim-card.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+            border-color: var(--accent-blue);
+        }
+
+        .sim-card.active::before {
+            transform: scaleX(1);
+        }
+
+        .sim-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--primary-gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sim-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-align: center;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sim-card.active .sim-label {
+            color: var(--text-primary);
+        }
+
+        /* Main Visualization Area */
+        .main-view {
+            background: radial-gradient(ellipse at center, rgba(20, 25, 45, 0.6) 0%, rgba(5, 7, 20, 0.95) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-view::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(0deg, 
+                    transparent, 
+                    transparent 2px, 
+                    rgba(100, 150, 255, 0.03) 2px, 
+                    rgba(100, 150, 255, 0.03) 4px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* HUD Elements */
+        .visualization-hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .hud-element {
+            position: absolute;
+            background: linear-gradient(135deg, var(--panel-bg) 0%, rgba(25, 30, 50, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+            pointer-events: auto;
+            animation: fadeInScale 0.5s ease;
+            box-shadow: var(--shadow-xl);
+        }
+
+        @keyframes fadeInScale {
+            from { 
+                opacity: 0; 
+                transform: scale(0.9);
+            }
+            to { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+        }
+
+        .metrics-panel {
+            top: 30px;
+            left: 30px;
+            min-width: 320px;
+        }
+
+        .metrics-header {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metrics-header::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.08);
+            transition: all var(--transition-base);
+        }
+
+        .metric-row:hover {
+            padding-left: 8px;
+            background: var(--glass-bg);
+            margin: 0 -8px;
+            padding-right: 8px;
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .metric-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        .metric-indicator.warning {
+            background: var(--warning);
+        }
+
+        .metric-indicator.danger {
+            background: var(--danger);
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .tools-panel {
+            top: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .tool-btn {
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(135deg, var(--panel-bg) 0%, rgba(25, 30, 50, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-size: 22px;
+            color: var(--text-secondary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all var(--transition-slow);
+            z-index: 0;
+        }
+
+        .tool-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-btn:hover {
+            border-color: transparent;
+            transform: scale(1.1);
+            box-shadow: var(--shadow-glow);
+            color: white;
+        }
+
+        .tool-btn:hover::before {
+            width: 150%;
+            height: 150%;
+        }
+
+        .tool-btn.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .view-controls {
+            bottom: 30px;
+            left: 30px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .view-btn {
+            padding: 14px 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-family: var(--font-stack);
+        }
+
+        .view-btn:hover {
+            background: var(--glass-hover);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .view-btn.active {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .coordinates {
+            bottom: 30px;
+            right: 30px;
+            font-size: 11px;
+            color: var(--text-tertiary);
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            background: var(--panel-bg);
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            gap: 16px;
+        }
+
+        .coord-item {
+            display: flex;
+            gap: 6px;
+        }
+
+        .coord-label {
+            color: var(--text-tertiary);
+        }
+
+        .coord-value {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            background: linear-gradient(180deg, var(--panel-bg) 0%, rgba(20, 25, 45, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 30px 25px;
+            position: relative;
+        }
+
+        .analysis-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 28px;
+            background: var(--glass-bg);
+            padding: 6px;
+            border-radius: 14px;
+        }
+
+        .analysis-tab {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all var(--transition-base);
+            font-family: var(--font-stack);
+            text-align: center;
+        }
+
+        .analysis-tab:hover {
+            background: var(--glass-hover);
+            color: var(--text-primary);
+        }
+
+        .analysis-tab.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .chart-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all var(--transition-base);
+        }
+
+        .chart-card:hover {
+            background: var(--glass-hover);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chart-action {
+            width: 28px;
+            height: 28px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all var(--transition-base);
+        }
+
+        .chart-action:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .chart-container {
+            height: 220px;
+            background: linear-gradient(180deg, rgba(5, 7, 20, 0.5) 0%, rgba(5, 7, 20, 0.8) 100%);
+            border-radius: 14px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .data-table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(100, 150, 255, 0.08) 0%, rgba(100, 150, 255, 0.12) 100%);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .data-table-cell {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+
+        .data-table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.06);
+            transition: all var(--transition-base);
+            cursor: pointer;
+        }
+
+        .data-table-row:hover {
+            background: var(--glass-bg);
+            padding-left: 24px;
+        }
+
+        .data-cell {
+            font-size: 13px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .data-cell.value {
+            font-weight: 600;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .data-cell.normal {
+            color: var(--text-secondary);
+        }
+
+        /* AI Insights Card */
+        .ai-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(240, 147, 251, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--shadow-lg);
+            animation: float-icon 3s ease-in-out infinite;
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .ai-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .ai-confidence {
+            margin-left: auto;
+            padding: 6px 12px;
+            background: rgba(0, 214, 143, 0.1);
+            border: 1px solid rgba(0, 214, 143, 0.3);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .ai-content {
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-recommendations {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(100, 150, 255, 0.15);
+            position: relative;
+            z-index: 1;
+        }
+
+        .recommendation {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 14px;
+            padding: 12px;
+            background: var(--glass-bg);
+            border-radius: 12px;
+            transition: all var(--transition-base);
+        }
+
+        .recommendation:hover {
+            background: var(--glass-hover);
+            padding-left: 18px;
+        }
+
+        .recommendation-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--success) 0%, rgba(0, 214, 143, 0.7) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .recommendation-text {
+            font-size: 13px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Timeline */
+        .timeline {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--panel-bg) 0%, rgba(25, 30, 50, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            gap: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 200%;
+            height: 2px;
+            background: var(--primary-gradient);
+            animation: scanline 4s linear infinite;
+        }
+
+        .playback-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .playback-btn {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-glow);
+            position: relative;
+        }
+
+        .playback-btn::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.1; }
+            100% { transform: scale(1); opacity: 0.3; }
+        }
+
+        .playback-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .playback-btn:active {
+            transform: scale(0.95);
+        }
+
+        .secondary-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            color: var(--text-secondary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+            font-family: var(--font-stack);
+        }
+
+        .secondary-btn:hover {
+            background: var(--glass-hover);
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            transform: scale(1.1);
+        }
+
+        .timeline-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .timeline-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timeline-time {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+        }
+
+        .timeline-time span {
+            color: var(--accent-cyan);
+        }
+
+        .timeline-phases {
+            display: flex;
+            gap: 16px;
+        }
+
+        .phase {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            transition: all var(--transition-base);
+        }
+
+        .phase.active {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(240, 147, 251, 0.2) 100%);
+            border-color: var(--accent-blue);
+        }
+
+        .phase-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-tertiary);
+            transition: all var(--transition-base);
+        }
+
+        .phase.active .phase-dot {
+            background: var(--accent-blue);
+            box-shadow: 0 0 10px var(--accent-blue);
+            animation: pulse 1s infinite;
+        }
+
+        .phase-name {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .phase.active .phase-name {
+            color: var(--text-primary);
+        }
+
+        .timeline-track {
+            position: relative;
+            height: 10px;
+            background: linear-gradient(90deg, rgba(100, 150, 255, 0.1) 0%, rgba(100, 150, 255, 0.15) 100%);
+            border-radius: 5px;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        .timeline-buffer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(100, 150, 255, 0.2) 0%, rgba(100, 150, 255, 0.3) 100%);
+            border-radius: 5px;
+            width: 60%;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 5px;
+            width: 35%;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+            position: relative;
+        }
+
+        .timeline-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 50px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        .timeline-handle {
+            position: absolute;
+            top: 50%;
+            left: 35%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: white;
+            border: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-base);
+            z-index: 2;
+        }
+
+        .timeline-handle:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.5);
+        }
+
+        .timeline-handle:active {
+            cursor: grabbing;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+
+        .speed-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .speed-value {
+            font-size: 16px;
+            font-weight: 600;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--dark-bg);
+            background-image: 
+                radial-gradient(ellipse at center, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100000;
+            animation: fadeOut 0.5s ease 3s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .heart-loader {
+            width: 120px;
+            height: 120px;
+            position: relative;
+        }
+
+        .heart-path {
+            stroke: url(#heartGradient);
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 300;
+            stroke-dashoffset: 300;
+            animation: drawHeart 2s ease-in-out infinite;
+        }
+
+        @keyframes drawHeart {
+            0% { stroke-dashoffset: 300; }
+            50% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -300; }
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 6px;
+            background: rgba(100, 150, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            height: 100%;
+            background: var(--primary-gradient);
+            animation: loadProgress 3s ease-out forwards;
+            border-radius: 3px;
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 36px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            box-shadow: var(--shadow-xl);
+        }
+
+        @keyframes slideUp {
+            from { 
+                transform: translateY(50px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1;
+            }
+        }
+
+        /* Notifications */
+        .notifications {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            z-index: 60000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .notification {
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 320px;
+            animation: slideInRight 0.3s ease;
+            box-shadow: var(--shadow-xl);
+        }
+
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(100px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1;
+            }
+        }
+
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .notification.success .notification-icon {
+            background: rgba(0, 214, 143, 0.2);
+            color: var(--success);
+        }
+
+        .notification.warning .notification-icon {
+            background: rgba(255, 170, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .notification.error .notification-icon {
+            background: rgba(255, 61, 113, 0.2);
+            color: var(--danger);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .notification-close {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-tertiary);
+            transition: all var(--transition-base);
+        }
+
+        .notification-close:hover {
+            color: var(--danger);
+            transform: scale(1.2) rotate(90deg);
+        }
+
+        /* Error State */
+        .error-message {
+            padding: 20px;
+            background: rgba(255, 61, 113, 0.1);
+            border: 1px solid rgba(255, 61, 113, 0.3);
+            border-radius: 12px;
+            color: var(--danger);
+            text-align: center;
+            margin: 20px;
+        }
+
+        .error-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .error-description {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1600px) {
+            .app-container {
+                grid-template-columns: 350px 1fr 400px;
+            }
+        }
+
+        @media (max-width: 1400px) {
+            .app-container {
+                grid-template-columns: 320px 1fr 360px;
+            }
+            
+            .logo-title {
+                font-size: 20px;
+            }
+            
+            .nav-btn {
+                padding: 10px 18px;
+                font-size: 12px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .header, .timeline, .tools-panel {
+                display: none;
+            }
+            
+            .main-view {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Particles -->
+    <div class="bg-particles" id="particles"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="heart-loader">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                    <defs>
+                        <linearGradient id="heartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#f093fb;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path class="heart-path" d="M60,30 C50,15 30,15 30,35 C30,55 60,85 60,85 C60,85 90,55 90,35 C90,15 70,15 60,30 Z" />
+                </svg>
+            </div>
+            <div class="loading-progress">
+                <div class="loading-bar"></div>
+            </div>
+            <div class="loading-text">Initializing Digital Twin</div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-section">
+                <div class="logo">
+                    <div class="logo-icon">❤️</div>
+                </div>
+                <div class="logo-text">
+                    <div class="logo-title">MitralViz Pro™</div>
+                    <div class="logo-subtitle">Digital Twin System v4.0</div>
+                </div>
+            </div>
+            
+            <nav class="header-nav">
+                <button class="nav-btn" onclick="app.importDICOM()"><span>Import DICOM</span></button>
+                <button class="nav-btn" onclick="app.exportData()"><span>Export</span></button>
+                <button class="nav-btn active" onclick="app.toggleSimulation()"><span>Simulation</span></button>
+                <button class="nav-btn" onclick="app.toggleAR()"><span>AR/VR</span></button>
+                <button class="nav-btn" onclick="app.showSettings()"><span>Settings</span></button>
+            </nav>
+            
+            <div class="header-status">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">System Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Left Panel -->
+        <aside class="left-panel">
+            <!-- Patient Information -->
+            <section class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Patient Information</h3>
+                    <div class="section-action">⚙️</div>
+                </div>
+                <div class="card">
+                    <div class="patient-header">
+                        <div class="patient-avatar">JD</div>
+                        <div class="patient-info">
+                            <div class="patient-name">Jane Doe</div>
+                            <div class="patient-id">ID: MV-2024-0847</div>
+                            <div class="patient-tags">
+                                <span class="tag">Female</span>
+                                <span class="tag">67y</span>
+                                <span class="tag critical">MR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Diagnosis</span>
+                            <span class="info-value highlight">Moderate MR</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">NYHA Class</span>
+                            <span class="info-value">II</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">BMI</span>
+                            <span class="info-value">24.3</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">BSA</span>
+                            <span class="info-value">1.76 m²</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">EF</span>
+                            <span class="info-value">58%</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">LA Volume</span>
+                            <span class="info-value">92 mL</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Visualization Controls -->
+            <section class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Visualization</h3>
+                    <div class="section-action">👁️</div>
+                </div>
+                <div class="card">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Tissue Opacity</span>
+                            <span class="control-value">85%</span>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 85%"></div>
+                            </div>
+                            <div class="slider-handle" style="left: 85%"></div>
+                        </div>
+                        <div class="slider-marks">
+                            <span class="slider-mark">0%</span>
+                            <span class="slider-mark">50%</span>
+                            <span class="slider-mark">100%</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Slice Position</span>
+                            <span class="control-value">Mid</span>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 50%"></div>
+                            </div>
+                            <div class="slider-handle" style="left: 50%"></div>
+                        </div>
+                        <div class="slider-marks">
+                            <span class="slider-mark">Apex</span>
+                            <span class="slider-mark">Mid</span>
+                            <span class="slider-mark">Base</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Layers</span>
+                        </div>
+                        <div class="toggle-grid">
+                            <button class="toggle-btn active" onclick="app.toggleLayer('tissue')"><span>Tissue</span></button>
+                            <button class="toggle-btn active" onclick="app.toggleLayer('flow')"><span>Blood Flow</span></button>
+                            <button class="toggle-btn" onclick="app.toggleLayer('calcium')"><span>Calcium</span></button>
+                            <button class="toggle-btn active" onclick="app.toggleLayer('annulus')"><span>Annulus</span></button>
+                            <button class="toggle-btn" onclick="app.toggleLayer('chordae')"><span>Chordae</span></button>
+                            <button class="toggle-btn" onclick="app.toggleLayer('papillary')"><span>Papillary</span></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Simulation Scenarios -->
+            <section class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Scenarios</h3>
+                    <div class="section-action">🔬</div>
+                </div>
+                <div class="card">
+                    <div class="simulation-grid">
+                        <div class="sim-card active" onclick="app.loadScenario('normal')">
+                            <div class="sim-icon">❤️</div>
+                            <span class="sim-label">Normal</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('mild-mr')">
+                            <div class="sim-icon">💧</div>
+                            <span class="sim-label">Mild MR</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('moderate-mr')">
+                            <div class="sim-icon">💦</div>
+                            <span class="sim-label">Mod MR</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('severe-mr')">
+                            <div class="sim-icon">🌊</div>
+                            <span class="sim-label">Severe</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('prolapse')">
+                            <div class="sim-icon">📈</div>
+                            <span class="sim-label">Prolapse</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('stenosis')">
+                            <div class="sim-icon">🚫</div>
+                            <span class="sim-label">Stenosis</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('flail')">
+                            <div class="sim-icon">🌪️</div>
+                            <span class="sim-label">Flail</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('repair')">
+                            <div class="sim-icon">🔧</div>
+                            <span class="sim-label">Repair</span>
+                        </div>
+                        <div class="sim-card" onclick="app.loadScenario('prosthetic')">
+                            <div class="sim-icon">⚙️</div>
+                            <span class="sim-label">Prosthetic</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hemodynamics -->
+            <section class="section">
+                <div class="section-header">
+                    <h3 class="section-title">Hemodynamics</h3>
+                    <div class="section-action">💉</div>
+                </div>
+                <div class="card">
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Heart Rate</span>
+                            <span class="control-value">72 bpm</span>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 40%"></div>
+                            </div>
+                            <div class="slider-handle" style="left: 40%"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>Systolic BP</span>
+                            <span class="control-value">120 mmHg</span>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: 50%"></div>
+                            </div>
+                            <div class="slider-handle" style="left: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </aside>
+
+        <!-- Main 3D View -->
+        <main class="main-view">
+            <div id="canvas-container">
+                <canvas id="renderCanvas"></canvas>
+            </div>
+            
+            <div class="visualization-hud">
+                <!-- Metrics Panel -->
+                <div class="hud-element metrics-panel">
+                    <h4 class="metrics-header">Real-time Metrics</h4>
+                    <div class="metrics-grid">
+                        <div class="metric-row">
+                            <div class="metric-label">
+                                <span class="metric-indicator warning"></span>
+                                <span>MR Volume</span>
+                            </div>
+                            <div class="metric-value">
+                                <span id="mrVolume">28.4</span>
+                                <span class="metric-unit">mL/beat</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">
+                                <span class="metric-indicator warning"></span>
+                                <span>EROA</span>
+                            </div>
+                            <div class="metric-value">
+                                <span id="eroa">0.32</span>
+                                <span class="metric-unit">cm²</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">
+                                <span class="metric-indicator"></span>
+                                <span>Peak Velocity</span>
+                            </div>
+                            <div class="metric-value">
+                                <span id="peakVel">4.8</span>
+                                <span class="metric-unit">m/s</span>
+                            </div>
+                        </div>
+                        <div class="metric-row">
+                            <div class="metric-label">
+                                <span class="metric-indicator"></span>
+                                <span>Mean Gradient</span>
+                            </div>
+                            <div class="metric-value">
+                                <span id="meanGrad">8.5</span>
+                                <span class="metric-unit">mmHg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools -->
+                <div class="hud-element tools-panel">
+                    <button class="tool-btn" onclick="app.toggleMeasure()"><span>📏</span></button>
+                    <button class="tool-btn" onclick="app.toggleAnnotate()"><span>✏️</span></button>
+                    <button class="tool-btn" onclick="app.screenshot()"><span>📸</span></button>
+                    <button class="tool-btn" onclick="app.toggleRecord()"><span>🎥</span></button>
+                    <button class="tool-btn" onclick="app.toggleFullscreen()"><span>⛶</span></button>
+                </div>
+
+                <!-- View Controls -->
+                <div class="hud-element view-controls">
+                    <button class="view-btn active" onclick="app.setView('3d')">3D View</button>
+                    <button class="view-btn" onclick="app.setView('4ch')">4-Chamber</button>
+                    <button class="view-btn" onclick="app.setView('lax')">Long Axis</button>
+                    <button class="view-btn" onclick="app.setView('sax')">Short Axis</button>
+                </div>
+
+                <!-- Coordinates -->
+                <div class="hud-element coordinates">
+                    <div class="coord-item">
+                        <span class="coord-label">X:</span>
+                        <span class="coord-value" id="coordX">0.00</span>
+                    </div>
+                    <div class="coord-item">
+                        <span class="coord-label">Y:</span>
+                        <span class="coord-value" id="coordY">0.00</span>
+                    </div>
+                    <div class="coord-item">
+                        <span class="coord-label">Z:</span>
+                        <span class="coord-value" id="coordZ">0.00</span>
+                    </div>
+                    <div class="coord-item">
+                        <span class="coord-label">FPS:</span>
+                        <span class="coord-value" id="fps">60</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Panel -->
+        <aside class="right-panel">
+            <div class="analysis-tabs">
+                <button class="analysis-tab active" onclick="app.switchTab('analysis')">Analysis</button>
+                <button class="analysis-tab" onclick="app.switchTab('measurements')">Measurements</button>
+                <button class="analysis-tab" onclick="app.switchTab('ai')">AI Insights</button>
+                <button class="analysis-tab" onclick="app.switchTab('reports')">Reports</button>
+            </div>
+
+            <div id="analysisContent">
+                <!-- Pressure Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h4 class="chart-title">Pressure Waveforms</h4>
+                        <div class="chart-actions">
+                            <button class="chart-action">⚙️</button>
+                            <button class="chart-action">📊</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas class="chart-canvas" id="pressureChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Flow Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h4 class="chart-title">Flow Velocity</h4>
+                        <div class="chart-actions">
+                            <button class="chart-action">⚙️</button>
+                            <button class="chart-action">📊</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas class="chart-canvas" id="flowChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Morphology Data -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h4 class="chart-title">Valve Morphology</h4>
+                    </div>
+                    <div class="data-table">
+                        <div class="data-table-header">
+                            <span class="data-table-cell">Parameter</span>
+                            <span class="data-table-cell">Value</span>
+                            <span class="data-table-cell">Normal</span>
+                        </div>
+                        <div class="data-table-row">
+                            <span class="data-cell">Annulus</span>
+                            <span class="data-cell value">32 mm</span>
+                            <span class="data-cell normal">28-30</span>
+                        </div>
+                        <div class="data-table-row">
+                            <span class="data-cell">Anterior</span>
+                            <span class="data-cell value">24 mm</span>
+                            <span class="data-cell normal">22-26</span>
+                        </div>
+                        <div class="data-table-row">
+                            <span class="data-cell">Posterior</span>
+                            <span class="data-cell value">14 mm</span>
+                            <span class="data-cell normal">12-16</span>
+                        </div>
+                        <div class="data-table-row">
+                            <span class="data-cell">Coaptation</span>
+                            <span class="data-cell value">7.2 mm</span>
+                            <span class="data-cell normal">8-10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Insights -->
+                <div class="ai-card">
+                    <div class="ai-header">
+                        <div class="ai-icon">🤖</div>
+                        <h4 class="ai-title">AI Analysis</h4>
+                        <span class="ai-confidence">95% Confidence</span>
+                    </div>
+                    <div class="ai-content">
+                        AI analysis detects moderate mitral regurgitation with posterior leaflet prolapse (P2 segment). The effective regurgitant orifice area and regurgitant volume indicate moderate severity requiring clinical monitoring.
+                    </div>
+                    <div class="ai-recommendations">
+                        <div class="recommendation">
+                            <div class="recommendation-icon">✓</div>
+                            <span class="recommendation-text">Continue medical management with ACE inhibitors</span>
+                        </div>
+                        <div class="recommendation">
+                            <div class="recommendation-icon">✓</div>
+                            <span class="recommendation-text">Schedule follow-up echo in 6 months</span>
+                        </div>
+                        <div class="recommendation">
+                            <div class="recommendation-icon">!</div>
+                            <span class="recommendation-text">Consider surgical consultation if symptoms progress</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            <div class="playback-controls">
+                <button class="secondary-btn" onclick="app.previousFrame()">⏮</button>
+                <button class="playback-btn" id="playBtn" onclick="app.togglePlayback()">▶</button>
+                <button class="secondary-btn" onclick="app.nextFrame()">⏭</button>
+            </div>
+            
+            <div class="timeline-container">
+                <div class="timeline-info">
+                    <div class="timeline-time">
+                        <span id="currentTime">0.350</span> / <span id="totalTime">1.000</span> sec
+                    </div>
+                    <div class="timeline-phases">
+                        <div class="phase" id="diastole">
+                            <div class="phase-dot"></div>
+                            <span class="phase-name">Diastole</span>
+                        </div>
+                        <div class="phase active" id="systole">
+                            <div class="phase-dot"></div>
+                            <span class="phase-name">Systole</span>
+                        </div>
+                        <div class="phase" id="isovolumetric">
+                            <div class="phase-dot"></div>
+                            <span class="phase-name">Isovolumetric</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-track" onclick="app.seekTimeline(event)">
+                    <div class="timeline-buffer"></div>
+                    <div class="timeline-progress"></div>
+                    <div class="timeline-handle"></div>
+                </div>
+            </div>
+            
+            <div class="speed-control">
+                <span class="speed-label">Speed:</span>
+                <button class="secondary-btn" onclick="app.decreaseSpeed()">−</button>
+                <span class="speed-value">1×</span>
+                <button class="secondary-btn" onclick="app.increaseSpeed()">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="notifications" id="notifications"></div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h2>Settings</h2>
+            <p>Configure advanced settings here.</p>
+            <button onclick="app.closeModal('settingsModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // =========================================
+        // ADVANCED MITRAL VALVE DIGITAL TWIN SYSTEM
+        // =========================================
+        
+        class MitralValveApp {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.composer = null;
+                this.controls = null;
+                this.animationId = null;
+                this.clock = new THREE.Clock();
+                
+                // Simulation state
+                this.isPlaying = true;
+                this.currentTime = 0;
+                this.cardiacCycle = 0.833; // 72 bpm = 0.833s per cycle
+                this.speed = 1;
+                
+                // Valve components
+                this.valveGroup = new THREE.Group();
+                this.anteriorLeaflet = null;
+                this.posteriorLeaflet = null;
+                this.chordaeGroup = new THREE.Group();
+                this.bloodParticles = null;
+                
+                // Physics parameters
+                this.hemodynamics = {
+                    heartRate: 72,
+                    systolicPressure: 120,
+                    diastolicPressure: 80,
+                    leftAtrialPressure: 10,
+                    strokeVolume: 70,
+                    regurgitantFraction: 0.3
+                };
+                
+                // Check WebGL support
+                if (!this.checkWebGLSupport()) {
+                    this.showError("WebGL is not supported in your browser");
+                    return;
+                }
+                
+                this.init();
+            }
+            
+            checkWebGLSupport() {
+                try {
+                    const canvas = document.createElement('canvas');
+                    return !!(window.WebGLRenderingContext && 
+                             (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+                } catch(e) {
+                    return false;
+                }
+            }
+            
+            init() {
+                this.setupRenderer();
+                this.setupScene();
+                this.setupCamera();
+                this.setupLighting();
+                this.createRealisticValve();
+                this.createBloodFlowSystem();
+                this.setupPostProcessing();
+                this.setupControls();
+                this.setupEventListeners();
+                this.animate();
+                this.createParticles();
+                this.initCharts();
+                
+                // Hide loading screen
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                }, 3000);
+            }
+            
+            setupRenderer() {
+                const container = document.getElementById('canvas-container');
+                
+                this.renderer = new THREE.WebGLRenderer({
+                    canvas: document.getElementById('renderCanvas'),
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: "high-performance"
+                });
+                
+                this.renderer.setSize(container.clientWidth, container.clientHeight);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                this.renderer.toneMappingExposure = 1.2;
+                this.renderer.outputEncoding = THREE.sRGBEncoding;
+            }
+            
+            setupScene() {
+                this.scene = new THREE.Scene();
+                
+                // Dark medical imaging background
+                this.scene.background = new THREE.Color(0x050510);
+                this.scene.fog = new THREE.FogExp2(0x050510, 0.02);
+                
+                // Add environment for reflections
+                const envTexture = new THREE.CubeTextureLoader().load([
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+                ]);
+                this.scene.environment = envTexture;
+            }
+            
+            setupCamera() {
+                const container = document.getElementById('canvas-container');
+                this.camera = new THREE.PerspectiveCamera(
+                    50,
+                    container.clientWidth / container.clientHeight,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(0, 15, 40);
+                this.camera.lookAt(0, 0, 0);
+            }
+            
+            setupLighting() {
+                // Ambient light for base illumination
+                const ambientLight = new THREE.AmbientLight(0x404060, 0.4);
+                this.scene.add(ambientLight);
+                
+                // Main key light
+                const keyLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                keyLight.position.set(10, 20, 10);
+                keyLight.castShadow = true;
+                keyLight.shadow.mapSize.width = 2048;
+                keyLight.shadow.mapSize.height = 2048;
+                keyLight.shadow.camera.near = 0.5;
+                keyLight.shadow.camera.far = 50;
+                keyLight.shadow.camera.left = -20;
+                keyLight.shadow.camera.right = 20;
+                keyLight.shadow.camera.top = 20;
+                keyLight.shadow.camera.bottom = -20;
+                this.scene.add(keyLight);
+                
+                // Fill light
+                const fillLight = new THREE.DirectionalLight(0x8899ff, 0.3);
+                fillLight.position.set(-10, 10, -5);
+                this.scene.add(fillLight);
+                
+                // Rim lights for edge definition
+                const rimLight1 = new THREE.PointLight(0xff6b9d, 0.5, 30);
+                rimLight1.position.set(-10, 5, 10);
+                this.scene.add(rimLight1);
+                
+                const rimLight2 = new THREE.PointLight(0x667eea, 0.5, 30);
+                rimLight2.position.set(10, 5, -10);
+                this.scene.add(rimLight2);
+                
+                // Spot light for focus
+                const spotLight = new THREE.SpotLight(0xffffff, 0.3);
+                spotLight.position.set(0, 30, 0);
+                spotLight.angle = Math.PI / 6;
+                spotLight.penumbra = 0.3;
+                spotLight.decay = 2;
+                spotLight.distance = 100;
+                spotLight.castShadow = true;
+                this.scene.add(spotLight);
+            }
+            
+            createRealisticValve() {
+                // Create anatomically accurate mitral valve
+                
+                // 1. MITRAL ANNULUS (D-shaped ring)
+                const annulusShape = new THREE.Shape();
+                const annulusPoints = [];
+                for (let i = 0; i <= 64; i++) {
+                    const theta = (i / 64) * Math.PI * 2;
+                    // D-shaped formula
+                    const r = 8 + 2 * Math.cos(2 * theta);
+                    const x = r * Math.cos(theta);
+                    const z = r * Math.sin(theta) * 0.8; // Flatten for D-shape
+                    annulusPoints.push(new THREE.Vector3(x, 0, z));
+                }
+                
+                const annulusCurve = new THREE.CatmullRomCurve3(annulusPoints, true);
+                const annulusGeometry = new THREE.TubeGeometry(annulusCurve, 64, 0.5, 16, true);
+                
+                const annulusMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0x8844aa,
+                    metalness: 0.2,
+                    roughness: 0.4,
+                    clearcoat: 0.3,
+                    clearcoatRoughness: 0.2,
+                    transparent: true,
+                    opacity: 0.9,
+                    side: THREE.DoubleSide
+                });
+                
+                const annulus = new THREE.Mesh(annulusGeometry, annulusMaterial);
+                annulus.castShadow = true;
+                annulus.receiveShadow = true;
+                this.valveGroup.add(annulus);
+                
+                // 2. ANTERIOR LEAFLET (larger, semicircular)
+                this.anteriorLeaflet = this.createLeaflet(true);
+                this.valveGroup.add(this.anteriorLeaflet);
+                
+                // 3. POSTERIOR LEAFLET (smaller, crescent-shaped with scallops)
+                this.posteriorLeaflet = this.createLeaflet(false);
+                this.valveGroup.add(this.posteriorLeaflet);
+                
+                // 4. CHORDAE TENDINEAE
+                this.createChordaeTendineae();
+                
+                // 5. PAPILLARY MUSCLES
+                this.createPapillaryMuscles();
+                
+                // Add complete valve to scene
+                this.scene.add(this.valveGroup);
+            }
+            
+            createLeaflet(isAnterior) {
+                const leafletGroup = new THREE.Group();
+                
+                // Create custom geometry for realistic leaflet shape
+                const segmentsWidth = 32;
+                const segmentsHeight = 32;
+                const geometry = new THREE.BufferGeometry();
+                
+                const vertices = [];
+                const normals = [];
+                const uvs = [];
+                const indices = [];
+                
+                // Generate leaflet surface
+                for (let j = 0; j <= segmentsHeight; j++) {
+                    for (let i = 0; i <= segmentsWidth; i++) {
+                        const u = i / segmentsWidth;
+                        const v = j / segmentsHeight;
+                        
+                        // Parametric surface for leaflet
+                        const theta = u * Math.PI;
+                        const phi = v * Math.PI * 0.5;
+                        
+                        let x, y, z;
+                        
+                        if (isAnterior) {
+                            // Anterior leaflet - larger, more curved
+                            const r = 8 + 2 * Math.sin(phi);
+                            x = r * Math.cos(theta) * (1 - v * 0.3);
+                            y = -v * 6 - Math.sin(theta * 2) * v * 1.5;
+                            z = r * Math.sin(theta) * (1 - v * 0.3) * 0.7;
+                            
+                            // Add billowing effect
+                            y += Math.sin(theta * 3) * Math.cos(phi * 2) * 0.5;
+                        } else {
+                            // Posterior leaflet - smaller with scallops
+                            const r = 6 + 1.5 * Math.sin(phi);
+                            x = r * Math.cos(theta + Math.PI) * (1 - v * 0.4);
+                            y = -v * 4 - Math.sin(theta * 3) * v;
+                            z = r * Math.sin(theta + Math.PI) * (1 - v * 0.4) * 0.7;
+                            
+                            // Add three scallops (P1, P2, P3)
+                            const scallop = Math.sin(theta * 3) * 0.3;
+                            y += scallop * v;
+                        }
+                        
+                        vertices.push(x, y, z);
+                        normals.push(0, 1, 0); // Will be recomputed
+                        uvs.push(u, v);
+                    }
+                }
+                
+                // Create faces
+                for (let j = 0; j < segmentsHeight; j++) {
+                    for (let i = 0; i < segmentsWidth; i++) {
+                        const a = i + (segmentsWidth + 1) * j;
+                        const b = i + (segmentsWidth + 1) * (j + 1);
+                        const c = (i + 1) + (segmentsWidth + 1) * (j + 1);
+                        const d = (i + 1) + (segmentsWidth + 1) * j;
+                        
+                        indices.push(a, b, d);
+                        indices.push(b, c, d);
+                    }
+                }
+                
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+                geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+                geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+                geometry.setIndex(indices);
+                geometry.computeVertexNormals();
+                
+                // Realistic tissue material
+                const leafletMaterial = new THREE.MeshPhysicalMaterial({
+                    color: isAnterior ? 0xffb3ba : 0xff6b7a,
+                    metalness: 0.0,
+                    roughness: 0.7,
+                    clearcoat: 0.2,
+                    clearcoatRoughness: 0.5,
+                    transparent: true,
+                    opacity: 0.85,
+                    side: THREE.DoubleSide,
+                    transmission: 0.1,
+                    thickness: 0.5,
+                    ior: 1.35,
+                    emissive: isAnterior ? 0x440000 : 0x330000,
+                    emissiveIntensity: 0.02
+                });
+                
+                const leaflet = new THREE.Mesh(geometry, leafletMaterial);
+                leaflet.castShadow = true;
+                leaflet.receiveShadow = true;
+                leaflet.name = isAnterior ? 'anteriorLeaflet' : 'posteriorLeaflet';
+                
+                leafletGroup.add(leaflet);
+                
+                // Add free edge highlighting
+                const edgeGeometry = new THREE.EdgesGeometry(geometry, 30);
+                const edgeMaterial = new THREE.LineBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+                leafletGroup.add(edges);
+                
+                return leafletGroup;
+            }
+            
+            createChordaeTendineae() {
+                // Create multiple chordae with realistic attachment points
+                const chordaeMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0xffffff,
+                    metalness: 0.0,
+                    roughness: 0.9,
+                    transparent: true,
+                    opacity: 0.7,
+                    transmission: 0.3
+                });
+                
+                // Primary chordae (marginal) - attach to free edge
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i / 12) * Math.PI * 2;
+                    const startX = Math.cos(angle) * 6;
+                    const startZ = Math.sin(angle) * 4;
+                    const startY = -4;
+                    
+                    const endX = Math.cos(angle) * 3;
+                    const endZ = Math.sin(angle) * 2;
+                    const endY = -14;
+                    
+                    const curve = new THREE.CatmullRomCurve3([
+                        new THREE.Vector3(startX, startY, startZ),
+                        new THREE.Vector3((startX + endX) / 2, (startY + endY) / 2 - 1, (startZ + endZ) / 2),
+                        new THREE.Vector3(endX, endY, endZ)
+                    ]);
+                    
+                    const chordGeometry = new THREE.TubeGeometry(curve, 8, 0.15, 4, false);
+                    const chord = new THREE.Mesh(chordGeometry, chordaeMaterial);
+                    chord.castShadow = true;
+                    this.chordaeGroup.add(chord);
+                }
+                
+                // Secondary chordae (strut) - attach to body
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i / 6) * Math.PI * 2;
+                    const startX = Math.cos(angle) * 4;
+                    const startZ = Math.sin(angle) * 3;
+                    const startY = -2;
+                    
+                    const endX = Math.cos(angle) * 2;
+                    const endZ = Math.sin(angle) * 1.5;
+                    const endY = -14;
+                    
+                    const curve = new THREE.CatmullRomCurve3([
+                        new THREE.Vector3(startX, startY, startZ),
+                        new THREE.Vector3(endX, endY, endZ)
+                    ]);
+                    
+                    const chordGeometry = new THREE.TubeGeometry(curve, 4, 0.2, 4, false);
+                    const chord = new THREE.Mesh(chordGeometry, chordaeMaterial);
+                    chord.castShadow = true;
+                    this.chordaeGroup.add(chord);
+                }
+                
+                this.valveGroup.add(this.chordaeGroup);
+            }
+            
+            createPapillaryMuscles() {
+                const muscleMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0xcc4466,
+                    metalness: 0.0,
+                    roughness: 0.8,
+                    clearcoat: 0.1,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                
+                // Anterolateral papillary muscle
+                const alGeometry = new THREE.CylinderGeometry(1.5, 2.5, 8, 16);
+                const anterolateral = new THREE.Mesh(alGeometry, muscleMaterial);
+                anterolateral.position.set(-4, -18, 2);
+                anterolateral.rotation.z = 0.2;
+                anterolateral.castShadow = true;
+                anterolateral.receiveShadow = true;
+                this.valveGroup.add(anterolateral);
+                
+                // Posteromedial papillary muscle
+                const pmGeometry = new THREE.CylinderGeometry(1.5, 2.5, 8, 16);
+                const posteromedial = new THREE.Mesh(pmGeometry, muscleMaterial);
+                posteromedial.position.set(4, -18, -2);
+                posteromedial.rotation.z = -0.2;
+                posteromedial.castShadow = true;
+                posteromedial.receiveShadow = true;
+                this.valveGroup.add(posteromedial);
+            }
+            
+            createBloodFlowSystem() {
+                // Create sophisticated particle system for blood flow
+                const particleCount = 5000;
+                const geometry = new THREE.BufferGeometry();
+                
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const sizes = new Float32Array(particleCount);
+                const velocities = new Float32Array(particleCount * 3);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // Initialize positions in a volume around the valve
+                    const radius = Math.random() * 10;
+                    const theta = Math.random() * Math.PI * 2;
+                    
+                    positions[i3] = Math.cos(theta) * radius;
+                    positions[i3 + 1] = Math.random() * 20 - 10;
+                    positions[i3 + 2] = Math.sin(theta) * radius * 0.7;
+                    
+                    // Color gradient from arterial to venous
+                    const t = positions[i3 + 1] / 20 + 0.5;
+                    colors[i3] = 0.8 + t * 0.2;     // Red channel
+                    colors[i3 + 1] = 0.1 + t * 0.1; // Green channel
+                    colors[i3 + 2] = 0.2 + t * 0.2; // Blue channel
+                    
+                    // Varying particle sizes
+                    sizes[i] = Math.random() * 0.3 + 0.1;
+                    
+                    // Initial velocities
+                    velocities[i3] = (Math.random() - 0.5) * 0.2;
+                    velocities[i3 + 1] = -Math.random() * 0.5 - 0.5;
+                    velocities[i3 + 2] = (Math.random() - 0.5) * 0.2;
+                }
+                
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+                
+                // Custom shader material for particles
+                const particleMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        opacity: { value: 0.7 }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        attribute vec3 velocity;
+                        varying vec3 vColor;
+                        uniform float time;
+                        
+                        void main() {
+                            vColor = color;
+                            vec3 pos = position;
+                            
+                            // Add turbulence
+                            pos.x += sin(time + position.y * 0.1) * 0.5;
+                            pos.z += cos(time + position.y * 0.1) * 0.5;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            gl_PointSize = size * (300.0 / -mvPosition.z);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float opacity;
+                        varying vec3 vColor;
+                        
+                        void main() {
+                            vec2 center = gl_PointCoord - 0.5;
+                            float dist = length(center);
+                            float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+                            
+                            gl_FragColor = vec4(vColor, alpha * opacity);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false,
+                    vertexColors: true
+                });
+                
+                this.bloodParticles = new THREE.Points(geometry, particleMaterial);
+                this.scene.add(this.bloodParticles);
+            }
+            
+            setupPostProcessing() {
+                // Add post-processing effects would go here
+                // Using EffectComposer, RenderPass, BloomPass etc.
+                // Simplified for now due to library constraints
+            }
+            
+            setupControls() {
+                // Mouse controls for camera rotation
+                let mouseX = 0, mouseY = 0;
+                const windowHalfX = window.innerWidth / 2;
+                const windowHalfY = window.innerHeight / 2;
+                
+                document.addEventListener('mousemove', (event) => {
+                    mouseX = (event.clientX - windowHalfX) / windowHalfX;
+                    mouseY = (event.clientY - windowHalfY) / windowHalfY;
+                });
+                
+                // Update camera position based on mouse
+                this.updateCameraPosition = () => {
+                    this.camera.position.x += (mouseX * 50 - this.camera.position.x) * 0.05;
+                    this.camera.position.y += (-mouseY * 30 + 15 - this.camera.position.y) * 0.05;
+                    this.camera.lookAt(this.scene.position);
+                };
+                
+                // Zoom with mouse wheel
+                document.addEventListener('wheel', (event) => {
+                    const zoomSpeed = 0.1;
+                    const delta = event.deltaY > 0 ? 1 + zoomSpeed : 1 - zoomSpeed;
+                    this.camera.position.multiplyScalar(delta);
+                    
+                    // Clamp zoom
+                    const distance = this.camera.position.length();
+                    if (distance < 20) {
+                        this.camera.position.setLength(20);
+                    } else if (distance > 100) {
+                        this.camera.position.setLength(100);
+                    }
+                });
+            }
+            
+            animateValve() {
+                const time = this.clock.getElapsedTime();
+                const cycleTime = (time * this.speed) % this.cardiacCycle;
+                const phase = cycleTime / this.cardiacCycle;
+                
+                // Systole (0-35% of cycle) - Valve closes
+                // Diastole (35-100% of cycle) - Valve opens
+                
+                const isSystole = phase < 0.35;
+                
+                if (this.anteriorLeaflet) {
+                    const leaflet = this.anteriorLeaflet.children[0];
+                    if (leaflet) {
+                        if (isSystole) {
+                            // Close valve during systole
+                            const closingPhase = phase / 0.35;
+                            leaflet.rotation.x = -closingPhase * 0.3;
+                            leaflet.position.y = closingPhase * 2;
+                            
+                            // Add realistic deformation
+                            const geometry = leaflet.geometry;
+                            const positions = geometry.attributes.position.array;
+                            for (let i = 0; i < positions.length; i += 3) {
+                                const originalY = positions[i + 1];
+                                positions[i + 1] = originalY + Math.sin(time * 5 + i) * 0.1 * closingPhase;
+                            }
+                            geometry.attributes.position.needsUpdate = true;
+                        } else {
+                            // Open valve during diastole
+                            const openingPhase = (phase - 0.35) / 0.65;
+                            leaflet.rotation.x = -0.3 + openingPhase * 0.3;
+                            leaflet.position.y = 2 - openingPhase * 2;
+                        }
+                    }
+                }
+                
+                if (this.posteriorLeaflet) {
+                    const leaflet = this.posteriorLeaflet.children[0];
+                    if (leaflet) {
+                        if (isSystole) {
+                            const closingPhase = phase / 0.35;
+                            leaflet.rotation.x = closingPhase * 0.25;
+                            leaflet.position.y = closingPhase * 1.5;
+                        } else {
+                            const openingPhase = (phase - 0.35) / 0.65;
+                            leaflet.rotation.x = 0.25 - openingPhase * 0.25;
+                            leaflet.position.y = 1.5 - openingPhase * 1.5;
+                        }
+                    }
+                }
+                
+                // Animate chordae tension
+                this.chordaeGroup.children.forEach((chord, index) => {
+                    const tensionFactor = isSystole ? 1.2 : 1.0;
+                    chord.scale.y = tensionFactor + Math.sin(time * 3 + index) * 0.05;
+                });
+                
+                // Update blood flow
+                if (this.bloodParticles) {
+                    const positions = this.bloodParticles.geometry.attributes.position.array;
+                    const velocities = this.bloodParticles.geometry.attributes.velocity.array;
+                    const colors = this.bloodParticles.geometry.attributes.color.array;
+                    
+                    for (let i = 0; i < positions.length; i += 3) {
+                        // Update position
+                        positions[i] += velocities[i];
+                        positions[i + 1] += velocities[i + 1];
+                        positions[i + 2] += velocities[i + 2];
+                        
+                        // Turbulent flow during regurgitation
+                        if (isSystole && positions[i + 1] > 0) {
+                            // Regurgitant jet
+                            positions[i] += (Math.random() - 0.5) * 0.3;
+                            positions[i + 2] += (Math.random() - 0.5) * 0.3;
+                            velocities[i + 1] = Math.abs(velocities[i + 1]) * 1.5;
+                            
+                            // Make regurgitant flow more visible (yellowish)
+                            colors[i] = 1.0;
+                            colors[i + 1] = 0.8;
+                            colors[i + 2] = 0.0;
+                        } else {
+                            // Normal flow
+                            colors[i] = 0.8;
+                            colors[i + 1] = 0.1;
+                            colors[i + 2] = 0.2;
+                        }
+                        
+                        // Reset particles that moved too far
+                        if (Math.abs(positions[i + 1]) > 20) {
+                            const radius = Math.random() * 10;
+                            const theta = Math.random() * Math.PI * 2;
+                            
+                            positions[i] = Math.cos(theta) * radius;
+                            positions[i + 1] = isSystole ? -10 : 10;
+                            positions[i + 2] = Math.sin(theta) * radius * 0.7;
+                            
+                            velocities[i] = (Math.random() - 0.5) * 0.2;
+                            velocities[i + 1] = isSystole ? Math.random() * 0.5 : -Math.random() * 0.5;
+                            velocities[i + 2] = (Math.random() - 0.5) * 0.2;
+                        }
+                    }
+                    
+                    this.bloodParticles.geometry.attributes.position.needsUpdate = true;
+                    this.bloodParticles.geometry.attributes.color.needsUpdate = true;
+                    
+                    // Update shader time uniform
+                    this.bloodParticles.material.uniforms.time.value = time;
+                }
+            }
+            
+            setupEventListeners() {
+                // Window resize
+                window.addEventListener('resize', () => this.onWindowResize());
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => this.handleKeyboard(e));
+            }
+            
+            onWindowResize() {
+                const container = document.getElementById('canvas-container');
+                this.camera.aspect = container.clientWidth / container.clientHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+            
+            handleKeyboard(event) {
+                switch(event.key) {
+                    case ' ':
+                        event.preventDefault();
+                        this.togglePlayback();
+                        break;
+                    case 'f':
+                        this.toggleFullscreen();
+                        break;
+                    case 'r':
+                        this.resetView();
+                        break;
+                }
+            }
+            
+            animate() {
+                this.animationId = requestAnimationFrame(() => this.animate());
+                
+                const deltaTime = this.clock.getDelta();
+                const elapsedTime = this.clock.getElapsedTime();
+                
+                // Update camera position for smooth movement
+                if (this.updateCameraPosition) {
+                    this.updateCameraPosition();
+                }
+                
+                // Update valve animation
+                if (this.isPlaying) {
+                    this.currentTime += deltaTime * this.speed;
+                    this.animateValve();
+                    this.updateTimeline();
+                    this.updateSimulation();
+                }
+                
+                // Subtle rotation for better viewing
+                this.valveGroup.rotation.y += 0.001;
+                
+                // Update metrics
+                this.updateMetrics();
+                
+                // Calculate FPS
+                this.updateFPS();
+                
+                // Update coordinate display
+                document.getElementById('coordZ').textContent = this.camera.position.z.toFixed(2);
+                
+                // Render
+                this.renderer.render(this.scene, this.camera);
+            }
+            
+            updateTimeline() {
+                const cycleTime = this.currentTime % this.cardiacCycle;
+                const phase = cycleTime / this.cardiacCycle;
+                
+                document.getElementById('currentTime').textContent = cycleTime.toFixed(3);
+                document.getElementById('totalTime').textContent = this.cardiacCycle.toFixed(3);
+                
+                const progress = phase * 100;
+                document.querySelector('.timeline-progress').style.width = progress + '%';
+                document.querySelector('.timeline-handle').style.left = progress + '%';
+                
+                // Update cardiac phases
+                if (phase < 0.1) {
+                    // Isovolumetric contraction
+                    document.getElementById('isovolumetric').classList.add('active');
+                    document.getElementById('systole').classList.remove('active');
+                    document.getElementById('diastole').classList.remove('active');
+                } else if (phase < 0.35) {
+                    // Systole
+                    document.getElementById('systole').classList.add('active');
+                    document.getElementById('isovolumetric').classList.remove('active');
+                    document.getElementById('diastole').classList.remove('active');
+                } else if (phase < 0.45) {
+                    // Isovolumetric relaxation
+                    document.getElementById('isovolumetric').classList.add('active');
+                    document.getElementById('systole').classList.remove('active');
+                    document.getElementById('diastole').classList.remove('active');
+                } else {
+                    // Diastole
+                    document.getElementById('diastole').classList.add('active');
+                    document.getElementById('systole').classList.remove('active');
+                    document.getElementById('isovolumetric').classList.remove('active');
+                }
+            }
+            
+            updateSimulation() {
+                const time = this.clock.getElapsedTime();
+                const phase = (this.currentTime % this.cardiacCycle) / this.cardiacCycle;
+                
+                // Simulate pressure changes
+                let atrialPressure, ventricularPressure;
+                
+                if (phase < 0.35) {
+                    // Systole - ventricle contracts
+                    ventricularPressure = this.hemodynamics.diastolicPressure + 
+                        (this.hemodynamics.systolicPressure - this.hemodynamics.diastolicPressure) * 
+                        Math.sin(phase / 0.35 * Math.PI / 2);
+                    atrialPressure = this.hemodynamics.leftAtrialPressure + 
+                        5 * Math.sin(phase / 0.35 * Math.PI);
+                } else {
+                    // Diastole - ventricle relaxes
+                    const diastolePhase = (phase - 0.35) / 0.65;
+                    ventricularPressure = this.hemodynamics.systolicPressure * 
+                        Math.exp(-diastolePhase * 3) + this.hemodynamics.diastolicPressure;
+                    atrialPressure = this.hemodynamics.leftAtrialPressure * 
+                        (1 + 0.3 * Math.sin(diastolePhase * Math.PI));
+                }
+                
+                // Calculate regurgitant flow
+                const pressureGradient = Math.max(0, ventricularPressure - atrialPressure);
+                const regurgitantVelocity = Math.sqrt(2 * pressureGradient / 1.06); // Simplified Bernoulli
+                const regurgitantVolume = this.hemodynamics.regurgitantFraction * 
+                    this.hemodynamics.strokeVolume * Math.sin(phase * Math.PI);
+                
+                // Update displayed metrics
+                document.getElementById('mrVolume').textContent = 
+                    Math.max(0, regurgitantVolume).toFixed(1);
+                document.getElementById('eroa').textContent = 
+                    (this.hemodynamics.regurgitantFraction * 0.4 + 
+                     Math.sin(time * 2) * 0.02).toFixed(2);
+                document.getElementById('peakVel').textContent = 
+                    regurgitantVelocity.toFixed(1);
+                document.getElementById('meanGrad').textContent = 
+                    (pressureGradient * 0.4).toFixed(1);
+            }
+            
+            updateMetrics() {
+                // Additional real-time metric calculations
+                const time = this.clock.getElapsedTime();
+                
+                // Add slight variations to simulate real measurements
+                const noise = Math.sin(time * 3) * 0.05;
+                
+                // Update metric indicators based on values
+                const mrVolume = parseFloat(document.getElementById('mrVolume').textContent);
+                const eroa = parseFloat(document.getElementById('eroa').textContent);
+                
+                // Update indicator colors based on severity
+                const indicators = document.querySelectorAll('.metric-indicator');
+                if (mrVolume > 30) {
+                    indicators[0].className = 'metric-indicator danger';
+                } else if (mrVolume > 15) {
+                    indicators[0].className = 'metric-indicator warning';
+                } else {
+                    indicators[0].className = 'metric-indicator';
+                }
+                
+                if (eroa > 0.4) {
+                    indicators[1].className = 'metric-indicator danger';
+                } else if (eroa > 0.2) {
+                    indicators[1].className = 'metric-indicator warning';
+                } else {
+                    indicators[1].className = 'metric-indicator';
+                }
+            }
+            
+            updateFPS() {
+                if (!this.lastTime) this.lastTime = performance.now();
+                if (!this.frames) this.frames = 0;
+                
+                const currentTime = performance.now();
+                this.frames++;
+                
+                if (currentTime >= this.lastTime + 1000) {
+                    const fps = Math.round((this.frames * 1000) / (currentTime - this.lastTime));
+                    document.getElementById('fps').textContent = fps;
+                    this.frames = 0;
+                    this.lastTime = currentTime;
+                }
+            }
+            
+            createParticles() {
+                const container = document.getElementById('particles');
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 20 + 's';
+                    particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                    container.appendChild(particle);
+                }
+            }
+            
+            initCharts() {
+                this.drawChart('pressureChart');
+                this.drawChart('flowChart');
+            }
+            
+            drawChart(canvasId) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+                
+                const animate = () => {
+                    // Clear canvas
+                    ctx.fillStyle = 'rgba(5, 7, 20, 0.1)';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // Draw grid
+                    ctx.strokeStyle = 'rgba(100, 150, 255, 0.1)';
+                    ctx.lineWidth = 1;
+                    
+                    for (let i = 0; i < width; i += 30) {
+                        ctx.beginPath();
+                        ctx.moveTo(i, 0);
+                        ctx.lineTo(i, height);
+                        ctx.stroke();
+                    }
+                    
+                    for (let i = 0; i < height; i += 30) {
+                        ctx.beginPath();
+                        ctx.moveTo(0, i);
+                        ctx.lineTo(width, i);
+                        ctx.stroke();
+                    }
+                    
+                    // Draw waveform
+                    const time = Date.now() * 0.001;
+                    
+                    if (canvasId === 'pressureChart') {
+                        // Draw pressure waveforms
+                        this.drawPressureWaveform(ctx, width, height, time);
+                    } else {
+                        // Draw flow waveform
+                        this.drawFlowWaveform(ctx, width, height, time);
+                    }
+                    
+                    requestAnimationFrame(animate);
+                };
+                
+                animate();
+            }
+            
+            drawPressureWaveform(ctx, width, height, time) {
+                // Left ventricular pressure
+                ctx.strokeStyle = 'rgba(102, 126, 234, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let x = 0; x < width; x++) {
+                    const t = (x / width) * 2 * Math.PI;
+                    const phase = (time + t) % (2 * Math.PI);
+                    
+                    let pressure;
+                    if (phase < Math.PI * 0.7) {
+                        // Systole
+                        pressure = 80 + 40 * Math.sin(phase / 0.7);
+                    } else {
+                        // Diastole
+                        pressure = 80 * Math.exp(-(phase - Math.PI * 0.7) / 2);
+                    }
+                    
+                    const y = height - (pressure / 140) * height;
+                    
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Left atrial pressure
+                ctx.strokeStyle = 'rgba(240, 147, 251, 0.8)';
+                ctx.beginPath();
+                
+                for (let x = 0; x < width; x++) {
+                    const t = (x / width) * 2 * Math.PI;
+                    const phase = (time + t) % (2 * Math.PI);
+                    
+                    const pressure = 10 + 5 * Math.sin(phase);
+                    const y = height - (pressure / 140) * height;
+                    
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            drawFlowWaveform(ctx, width, height, time) {
+                // Transmitral flow velocity
+                ctx.strokeStyle = 'rgba(0, 212, 143, 0.8)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let x = 0; x < width; x++) {
+                    const t = (x / width) * 2 * Math.PI;
+                    const phase = (time + t) % (2 * Math.PI);
+                    
+                    let velocity;
+                    if (phase < Math.PI * 0.7) {
+                        // Systole - minimal forward flow
+                        velocity = Math.max(0, -Math.sin(phase / 0.7) * 0.3);
+                    } else {
+                        // Diastole - E and A waves
+                        const dPhase = (phase - Math.PI * 0.7) / (Math.PI * 1.3);
+                        if (dPhase < 0.4) {
+                            // E wave
+                            velocity = Math.sin(dPhase / 0.4 * Math.PI) * 1.2;
+                        } else if (dPhase > 0.7) {
+                            // A wave
+                            velocity = Math.sin((dPhase - 0.7) / 0.3 * Math.PI) * 0.8;
+                        } else {
+                            velocity = 0.1;
+                        }
+                    }
+                    
+                    const y = height / 2 - velocity * height / 3;
+                    
+                    if (x === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // Add regurgitant flow
+                if (this.hemodynamics.regurgitantFraction > 0) {
+                    ctx.strokeStyle = 'rgba(255, 100, 100, 0.6)';
+                    ctx.beginPath();
+                    
+                    for (let x = 0; x < width; x++) {
+                        const t = (x / width) * 2 * Math.PI;
+                        const phase = (time + t) % (2 * Math.PI);
+                        
+                        let velocity = 0;
+                        if (phase < Math.PI * 0.7) {
+                            // Systolic regurgitation
+                            velocity = -Math.sin(phase / 0.7 * Math.PI) * 
+                                      this.hemodynamics.regurgitantFraction * 2;
+                        }
+                        
+                        const y = height / 2 - velocity * height / 3;
+                        
+                        if (x === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                    ctx.stroke();
+                }
+            }
+            
+            // UI Control Methods
+            togglePlayback() {
+                this.isPlaying = !this.isPlaying;
+                document.getElementById('playBtn').innerHTML = this.isPlaying ? '❚❚' : '▶';
+            }
+            
+            previousFrame() {
+                this.currentTime = Math.max(0, this.currentTime - 0.016);
+                this.updateTimeline();
+            }
+            
+            nextFrame() {
+                this.currentTime += 0.016;
+                this.updateTimeline();
+            }
+            
+            seekTimeline(event) {
+                const rect = event.currentTarget.getBoundingClientRect();
+                const percent = (event.clientX - rect.left) / rect.width;
+                this.currentTime = percent * this.cardiacCycle;
+                this.updateTimeline();
+            }
+            
+            increaseSpeed() {
+                this.speed = Math.min(4, this.speed * 1.5);
+                document.querySelector('.speed-value').textContent = this.speed.toFixed(0) + '×';
+            }
+            
+            decreaseSpeed() {
+                this.speed = Math.max(0.25, this.speed / 1.5);
+                const displaySpeed = this.speed < 1 ? this.speed.toFixed(1) : this.speed.toFixed(0);
+                document.querySelector('.speed-value').textContent = displaySpeed + '×';
+            }
+            
+            loadScenario(scenario) {
+                // Update hemodynamics based on scenario
+                const scenarios = {
+                    'normal': {
+                        regurgitantFraction: 0,
+                        heartRate: 70,
+                        systolicPressure: 120,
+                        diastolicPressure: 80,
+                        leftAtrialPressure: 8
+                    },
+                    'mild-mr': {
+                        regurgitantFraction: 0.15,
+                        heartRate: 75,
+                        systolicPressure: 125,
+                        diastolicPressure: 80,
+                        leftAtrialPressure: 10
+                    },
+                    'moderate-mr': {
+                        regurgitantFraction: 0.3,
+                        heartRate: 78,
+                        systolicPressure: 130,
+                        diastolicPressure: 85,
+                        leftAtrialPressure: 15
+                    },
+                    'severe-mr': {
+                        regurgitantFraction: 0.5,
+                        heartRate: 85,
+                        systolicPressure: 135,
+                        diastolicPressure: 85,
+                        leftAtrialPressure: 20
+                    },
+                    'prolapse': {
+                        regurgitantFraction: 0.35,
+                        heartRate: 80,
+                        systolicPressure: 130,
+                        diastolicPressure: 80,
+                        leftAtrialPressure: 18
+                    },
+                    'stenosis': {
+                        regurgitantFraction: 0.05,
+                        heartRate: 90,
+                        systolicPressure: 140,
+                        diastolicPressure: 90,
+                        leftAtrialPressure: 25
+                    },
+                    'flail': {
+                        regurgitantFraction: 0.6,
+                        heartRate: 88,
+                        systolicPressure: 125,
+                        diastolicPressure: 75,
+                        leftAtrialPressure: 22
+                    },
+                    'repair': {
+                        regurgitantFraction: 0.05,
+                        heartRate: 70,
+                        systolicPressure: 118,
+                        diastolicPressure: 78,
+                        leftAtrialPressure: 10
+                    },
+                    'prosthetic': {
+                        regurgitantFraction: 0.02,
+                        heartRate: 72,
+                        systolicPressure: 122,
+                        diastolicPressure: 80,
+                        leftAtrialPressure: 12
+                    }
+                };
+                
+                if (scenarios[scenario]) {
+                    Object.assign(this.hemodynamics, scenarios[scenario]);
+                    this.cardiacCycle = 60 / this.hemodynamics.heartRate;
+                }
+                
+                // Update UI
+                document.querySelectorAll('.sim-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                event.target.closest('.sim-card').classList.add('active');
+                
+                this.showNotification('success', 'Scenario Loaded', 
+                    `${scenario.replace('-', ' ')} scenario activated`);
+            }
+            
+            toggleLayer(layer) {
+                event.target.classList.toggle('active');
+                
+                // Toggle visibility of layer in 3D scene
+                switch(layer) {
+                    case 'tissue':
+                        if (this.anteriorLeaflet) 
+                            this.anteriorLeaflet.visible = !this.anteriorLeaflet.visible;
+                        if (this.posteriorLeaflet) 
+                            this.posteriorLeaflet.visible = !this.posteriorLeaflet.visible;
+                        break;
+                    case 'flow':
+                        if (this.bloodParticles) 
+                            this.bloodParticles.visible = !this.bloodParticles.visible;
+                        break;
+                    case 'chordae':
+                        if (this.chordaeGroup) 
+                            this.chordaeGroup.visible = !this.chordaeGroup.visible;
+                        break;
+                }
+                
+                this.showNotification('info', 'Layer Toggle', `${layer} layer updated`);
+            }
+            
+            setView(view) {
+                document.querySelectorAll('.view-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // Animate camera to new position
+                const positions = {
+                    '3d': { x: 0, y: 15, z: 40 },
+                    '4ch': { x: 0, y: 0, z: 50 },
+                    'lax': { x: 50, y: 0, z: 0 },
+                    'sax': { x: 0, y: 50, z: 0 }
+                };
+                
+                if (positions[view]) {
+                    const pos = positions[view];
+                    this.camera.position.set(pos.x, pos.y, pos.z);
+                    this.camera.lookAt(0, 0, 0);
+                }
+            }
+            
+            resetView() {
+                this.camera.position.set(0, 15, 40);
+                this.camera.lookAt(0, 0, 0);
+                this.valveGroup.rotation.set(0, 0, 0);
+            }
+            
+            switchTab(tab) {
+                document.querySelectorAll('.analysis-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+            
+            toggleMeasure() {
+                this.showNotification('info', 'Measurement', 'Measurement tool activated');
+            }
+            
+            toggleAnnotate() {
+                this.showNotification('info', 'Annotation', 'Annotation tool activated');
+            }
+            
+            screenshot() {
+                const dataURL = this.renderer.domElement.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `mitral_valve_${Date.now()}.png`;
+                link.href = dataURL;
+                link.click();
+                
+                this.showNotification('success', 'Screenshot', 'Image saved successfully');
+            }
+            
+            toggleRecord() {
+                this.showNotification('warning', 'Recording', 'Recording feature coming soon');
+            }
+            
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            
+            importDICOM() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.multiple = true;
+                input.accept = '.dcm';
+                input.onchange = (e) => {
+                    const files = e.target.files;
+                    this.showNotification('info', 'Import', `Importing ${files.length} DICOM files`);
+                };
+                input.click();
+            }
+            
+            exportData() {
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    hemodynamics: this.hemodynamics,
+                    metrics: {
+                        mrVolume: document.getElementById('mrVolume').textContent,
+                        eroa: document.getElementById('eroa').textContent,
+                        peakVelocity: document.getElementById('peakVel').textContent,
+                        meanGradient: document.getElementById('meanGrad').textContent
+                    }
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], 
+                    { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `mitral_data_${Date.now()}.json`;
+                link.click();
+                
+                this.showNotification('success', 'Export', 'Data exported successfully');
+            }
+            
+            toggleSimulation() {
+                this.togglePlayback();
+            }
+            
+            toggleAR() {
+                this.showNotification('info', 'AR/VR', 'WebXR AR/VR mode coming soon');
+            }
+            
+            showSettings() {
+                document.getElementById('settingsModal').classList.add('active');
+            }
+            
+            closeModal(modalId) {
+                document.getElementById(modalId).classList.remove('active');
+            }
+            
+            showNotification(type, title, message) {
+                const container = document.getElementById('notifications');
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="notification-icon">
+                        ${type === 'success' ? '✓' : type === 'warning' ? '!' : 'ℹ'}
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">${title}</div>
+                        <div class="notification-message">${message}</div>
+                    </div>
+                    <div class="notification-close" onclick="this.parentElement.remove()">✕</div>
+                `;
+                
+                container.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 5000);
+            }
+            
+            showError(message) {
+                const container = document.getElementById('canvas-container');
+                container.innerHTML = `
+                    <div class="error-message">
+                        <div class="error-title">Error</div>
+                        <div class="error-description">${message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize application
+        let app = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                app = new MitralValveApp();
+                
+                // Start with simulation playing
+                app.isPlaying = true;
+                document.getElementById('playBtn').innerHTML = '❚❚';
+            } catch (error) {
+                console.error('Failed to initialize application:', error);
+                document.getElementById('canvas-container').innerHTML = `
+                    <div class="error-message">
+                        <div class="error-title">Initialization Error</div>
+                        <div class="error-description">Failed to start the application. Please refresh the page.</div>
+                    </div>
+                `;
+            }
+        });
+        
+        // Error handling
+        window.addEventListener('error', (e) => {
+            console.error('Application error:', e.error);
+        });
+        
+        // Performance monitoring
+        if (window.performance && window.performance.memory) {
+            setInterval(() => {
+                const memory = window.performance.memory;
+                const used = Math.round(memory.usedJSHeapSize / 1048576);
+                const total = Math.round(memory.totalJSHeapSize / 1048576);
+                console.log(`Memory: ${used}MB / ${total}MB`);
+            }, 10000);
+        }
+    </script>
+</body>
+</html>
